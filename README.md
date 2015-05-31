@@ -1,6 +1,12 @@
 # go-toggl-cli
 Toggl.com console client
 
+Install:
+
+```
+go get github.com/iamdeuterium/go-toggl-cli/toggl
+```
+
 Set api_token:
 
 ```
