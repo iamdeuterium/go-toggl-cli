@@ -7,10 +7,16 @@ Install:
 go get github.com/iamdeuterium/go-toggl-cli/toggl
 ```
 
-Set api_token:
+Set api token and save to ~/.togglrc:
 
 ```
-toggl config set api_token YOUR_API_TOKEN
+toggl token YOUR_API_TOKEN
+```
+
+Show api token:
+
+```
+toggl token
 ```
 
 Start last entry

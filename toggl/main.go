@@ -24,8 +24,8 @@ func main() {
 	}()
 
 	app := cli.NewApp()
-	app.Name = "toggl.com console client"
-	app.Usage = "be happy!"
+	app.Name = "toggl"
+	app.Usage = "toggl.com console client"
 	app.Action = CommandDefault
 
 	app.Commands = []cli.Command{
@@ -51,20 +51,20 @@ func main() {
 			Action: 	CommandStop,
 		},
 		{
-			Name:      	"config",
-			Usage:     	"show config",
-			Action: 	CommandConfig,
-			Subcommands: []cli.Command{
-				{
-					Name:  "set",
-					Usage: "set",
-					Action: CommandConfigSet,
-				},
-			},
+			Name:      	"status",
+			Usage:     	"show status",
+			Action: 	CommandStatus,
+		},
+		{
+			Name:      	"token",
+			Usage:     	"show or set api token",
+			Action: 	CommandToken,
 		},
 	}
 
 	app.Run(os.Args)
+
+	fmt.Println()
 }
 
 func GetApiClient() toggl.ApiClient {
@@ -74,6 +74,21 @@ func GetApiClient() toggl.ApiClient {
 func CommandDefault(c *cli.Context) {
 	fmt.Println("Nothing...")
 }
+
+func CommandStatus(c *cli.Context) {
+	apiClient := GetApiClient()
+
+	currentEntry := apiClient.TimeEntries.Current()
+
+	fmt.Print("Current active: ")
+
+	if currentEntry.IsPersisted() {
+		fmt.Print(currentEntry.Description)
+	} else {
+		fmt.Println("nothing")
+	}
+}
+
 
 func CommandStart(c *cli.Context) {
 	apiClient := GetApiClient()
@@ -172,17 +187,11 @@ func CommandStop(c *cli.Context) {
 	}
 }
 
-func CommandConfig(c *cli.Context) {
-
-}
-
-func CommandConfigSet(c *cli.Context) {
-	if len(c.Args()) < 2 {
-		return
-	}
-
-	 if c.Args()[0] == "api_token" {
-		config.ApiToken = c.Args()[1]
+func CommandToken(c *cli.Context) {
+	if len(c.Args()) == 1 {
+		config.ApiToken = c.Args().First()
 		config.Save()
 	}
+
+	fmt.Printf("Your token: %s", config.ApiToken)
 }
