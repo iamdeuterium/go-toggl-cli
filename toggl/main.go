@@ -161,10 +161,41 @@ func CommandStart(c *cli.Context) {
 			entry.WorkspaceID = apiClient.Users.Current().DefaultWorkspaceID
 		}
 
-		project, ok := apiClient.Projects.GetByName(projectName, entry.WorkspaceID)
+		projects, _ := apiClient.Projects.GetByNamePrefix(projectName, entry.WorkspaceID)
 
-		if ok {
-			entry.ProjectID = project.ID
+		if len(projects) > 0 {
+			if len(projects) == 1 {
+				entry.ProjectID = projects[0].ID
+			} else {
+				clients := apiClient.Clients.All()
+
+				for i := 0; i < len(projects); i++ {
+					client := "No client"
+					for j := 0; j < len(*clients); j++ {
+						if projects[i].ClientID == (*clients)[j].ID {
+							client = (*clients)[j].Name
+						}
+					}
+
+					fmt.Printf("[%d]\t%s\t[%s]\n", i + 1, projects[i].Name, client)
+				}
+
+				for {
+					var n int
+
+					fmt.Print("Select project: ")
+					fmt.Scanf("%d", &n)
+
+					if n > 0 && n <= len(projects) {
+						entry.ProjectID = projects[n - 1].ID
+
+						break
+					} else {
+						fmt.Println("Mmm?")
+						break
+					}
+				}
+			}
 		}
 	}
 
